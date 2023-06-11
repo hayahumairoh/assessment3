@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Details</title>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+
+    .form-container {
+      margin-bottom: 20px;
+    }
+
+    .form-container label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .form-container input[type="text"],
+    .form-container input[type="number"] {
+      width: 200px;
+      padding: 5px;
+      margin-bottom: 10px;
+    }
+
+    .form-container input[type="submit"] {
+      padding: 5px 5px;
+      background-color: #724caf;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    .error {
+      color: red;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Tambah Data</h2>
+    <form id="addForm">
+      <div class="form-group">
+        <label for="nama_details">Nama Details:</label>
+        <input type="text" id="nama_details" name="nama_details">
+        <span class="error"></span>
+      </div>
+      <div class="form-group">
+        <label for="deskripsi_details">Deskripsi Details:</label>
+        <input type="text" id="deskripsi_details" name="deskripsi_details">
+        <span class="error"></span>
+      </div>
+      <input type="submit" value="Tambah">
+    </form>
+  </div>
+
+  <div class="form-container">
+    <h2>Update Data</h2>
+    <form id="updateForm">
+      <div class="form-group">
+        <label for="update_id">ID:</label>
+        <input type="text" id="update_id_details" name="id_details">
+        <span class="error"></span>
+      </div>
+      <div class="form-group">
+        <label for="update_nama_details">Nama Details:</label>
+        <input type="text" id="update_nama_details" name="nama_details">
+        <span class="error"></span>
+      </div>
+      <div class="form-group">
+        <label for="update_deskripsi_details">Deskripsi Details:</label>
+        <input type="text" id="update_deskripsi_details" name="deskripsi_details">
+        <span class="error"></span>
+      </div>
+      <input type="submit" value="Update">
+    </form>
+  </div>
+
+  <table id="detailsTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nama Details</th>
+        <th>Deskripsi Details</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+  <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Inisialisasi DataTable
+      var dataTable = $('#detailsTable').DataTable({
+        ajax: {
+          url: 'inputdetails.php', // Ganti "nama_file_php.php" dengan nama file PHP yang berisi kode di atas
+          method: 'GET',
+          dataSrc: ''
+        },
+        columns: [
+          { data: 'id_details' },
+          { data: 'nama_details' },
+          { data: 'deskripsi_details' }
+        ]
+      });
+
+      // Validasi Form Tambah
+      $('#addForm').validate({
+        rules: {
+          nama_details: {
+            required: true
+          },
+          deskripsi_details: {
+            required: true
+          },
+        },
+        messages: {
+          nama_details: {
+            required: 'Nama Details harus diisi'
+          },
+          deskripsi_details: {
+            required: 'Deskripsi Details harus diisi'
+          },
+        },
+        submitHandler: function(form) {
+          // Proses submit form tambah
+          $.ajax({
+            url: 'inputdetails.php', // Ganti "nama_file_php.php" dengan nama file PHP yang berisi kode di atas
+            method: 'POST',
+            data: $(form).serialize(),
+            dataType: 'json',
+            success: function(response) {
+              if (response.status === 'berhasil') {
+                // Refresh DataTable
+                dataTable.ajax.reload();
+                // Reset form
+                form.reset();
+              }
+            }
+          });
+        }
+      });
+
+      // Validasi Form Update
+      $('#updateForm').validate({
+        rules: {
+          id_details: {
+            required: true
+          },
+          nama_details: {
+            required: true
+          },
+          deskripsi_details: {
+            required: true
+          },
+        },
+        messages: {
+          id_details: {
+            required: 'ID harus diisi'
+          },
+          nama_details: {
+            required: 'Nama Details harus diisi'
+          },
+          deskripsi_details: {
+            required: 'Deskripsi Details harus diisi'
+          },
+        },
+        submitHandler: function(form) {
+          // Proses submit form update
+          $.ajax({
+            url: 'inputdetails.php', // Ganti "nama_file_php.php" dengan nama file PHP yang berisi kode di atas
+            method: 'PUT',
+            data: $(form).serialize(),
+            dataType: 'json',
+            success: function(response) {
+              if (response.status === 'berhasil') {
+                // Refresh DataTable
+                dataTable.ajax.reload();
+                // Reset form
+                form.reset();
+              }
+            }
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
